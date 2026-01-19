@@ -1125,7 +1125,7 @@
                                         </div>
                                         <div style="margin-bottom: 5px;">
                                             <strong>Task 6:</strong><br>
-                                            <label style="margin-left: 20px;"><input type="radio" name="q1-task6-${index}" class="q1-check-${index}" data-marks="1" onchange="calculateQ1(${index})" checked> Kept empty/comment (+1)</label><br>
+                                            <label style="margin-left: 20px;"><input type="radio" name="q1-task6-${index}" class="q1-check-${index}" data-marks="1" onchange="calculateQ1(${index})"> Kept empty/comment (+1)</label><br>
                                             <label style="margin-left: 20px;"><input type="radio" name="q1-task6-${index}" class="q1-check-${index}" data-marks="-1" onchange="calculateQ1(${index})"> Plotted anything (-1)</label>
                                         </div>
                                     </div>
@@ -1724,10 +1724,47 @@
             const partTasks = document.querySelectorAll(`.${question}-${part}-task-${index}`);
             
             partTasks.forEach(taskCheckbox => {
+                // Update checkbox state
                 taskCheckbox.checked = isChecked;
-                // Trigger the task's quick check
-                quickCheck(taskCheckbox, index, question);
+                
+                // Manually update radios without triggering calculate
+                const taskName = taskCheckbox.getAttribute('data-task');
+                const marks = taskCheckbox.getAttribute('data-marks');
+                
+                if (isChecked) {
+                    // Select the hidden "Full" radio button for this task
+                    const radios = document.querySelectorAll(`input[name="${taskName}-${index}"]`);
+                    radios.forEach(radio => {
+                        if (radio.getAttribute('data-marks') === marks) {
+                            radio.checked = true;
+                        }
+                        // Disable visible Half and None radios
+                        if (radio.style.display !== 'none') {
+                            radio.disabled = true;
+                        }
+                    });
+                } else {
+                    // UNCHECK all radio buttons (reset to nothing selected)
+                    const radios = document.querySelectorAll(`input[name="${taskName}-${index}"]`);
+                    radios.forEach(radio => {
+                        radio.checked = false;  // Uncheck everything
+                        // Enable all visible radios
+                        if (radio.style.display !== 'none') {
+                            radio.disabled = false;
+                        }
+                    });
+                }
             });
+            
+            // Now calculate once after all tasks are updated
+            if (question === 'q1') calculateQ1(index);
+            else if (question === 'q2') calculateQ2(index);
+            else if (question === 'q3') calculateQ3(index);
+        }
+
+        function quickCheckTask(checkbox, index, question) {
+            // This function is no longer needed, can be removed
+            // Keeping it for backwards compatibility but it does nothing
         }
 
         function quickCheck(checkbox, index, question) {
