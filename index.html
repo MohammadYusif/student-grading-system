@@ -1131,7 +1131,7 @@
                                     </div>
                                 </details>
                                 
-                                <details id="q1-p3-details-${index}" class="incomplete-part"> style="margin-top: 10px;">
+                                <details id="q1-p3-details-${index}" class="incomplete-part" style="margin-top: 10px;">
                                     <summary style="cursor: pointer; font-weight: 600; margin-bottom: 10px;">
                                         Part 3: Model Building (6 marks)
                                         <label style="margin-left: 20px; font-weight: normal;" onclick="event.stopPropagation();">
@@ -1177,7 +1177,7 @@
                                     </div>
                                 </details>
                                 
-                                <details id="q1-p4-details-${index}" class="incomplete-part"> style="margin-top: 10px;">
+                                <details id="q1-p4-details-${index}" class="incomplete-part" style="margin-top: 10px;">
                                     <summary style="cursor: pointer; font-weight: 600; margin-bottom: 10px;">
                                         Part 4: Evaluation (3 marks)
                                         <label style="margin-left: 20px; font-weight: normal;" onclick="event.stopPropagation();">
@@ -1202,7 +1202,7 @@
                                     </div>
                                 </details>
                                 
-                                <details id="q1-bonus-details-${index}" class="incomplete-part"> style="margin-top: 10px;">
+                                <details id="q1-bonus-details-${index}" class="incomplete-part" style="margin-top: 10px;">
                                     <summary style="cursor: pointer; font-weight: 600; margin-bottom: 10px;">
                                         Part 5: Bonus (3 marks)
                                         <label style="margin-left: 20px; font-weight: normal;" onclick="event.stopPropagation();">
@@ -1316,7 +1316,7 @@
                                     </div>
                                 </details>
                                 
-                                <details id="q2-p2-details-${index}" class="incomplete-part"> style="margin-top: 10px;">
+                                <details id="q2-p2-details-${index}" class="incomplete-part" style="margin-top: 10px;">
                                     <summary style="cursor: pointer; font-weight: 600; margin-bottom: 10px;">
                                         Part 2: Model Building (8 marks)
                                         <label style="margin-left: 20px; font-weight: normal;" onclick="event.stopPropagation();">
@@ -1362,7 +1362,7 @@
                                     </div>
                                 </details>
                                 
-                                <details id="q2-p3-details-${index}" class="incomplete-part"> style="margin-top: 10px;">
+                                <details id="q2-p3-details-${index}" class="incomplete-part" style="margin-top: 10px;">
                                     <summary style="cursor: pointer; font-weight: 600; margin-bottom: 10px;">
                                         Part 3: Training & Evaluation (4 marks)
                                         <label style="margin-left: 20px; font-weight: normal;" onclick="event.stopPropagation();">
@@ -1380,7 +1380,7 @@
                                     </div>
                                 </details>
                                 
-                                <details id="q2-bonus-details-${index}" class="incomplete-part"> style="margin-top: 10px;">
+                                <details id="q2-bonus-details-${index}" class="incomplete-part" style="margin-top: 10px;">
                                     <summary style="cursor: pointer; font-weight: 600; margin-bottom: 10px;">
                                         Bonus (3 marks)
                                         <label style="margin-left: 20px; font-weight: normal;" onclick="event.stopPropagation();">
@@ -1487,7 +1487,7 @@
                                     </div>
                                 </details>
                                 
-                                <details id="q1-p2-details-${index}" class="incomplete-part"> style="margin-top: 10px;">
+                                <details id="q1-p2-details-${index}" class="incomplete-part" style="margin-top: 10px;">
                                     <summary style="cursor: pointer; font-weight: 600; margin-bottom: 10px;">
                                         Part 2: Preprocessing (5 marks)
                                         <label style="margin-left: 20px; font-weight: normal;" onclick="event.stopPropagation();">
@@ -1533,7 +1533,7 @@
                                     </div>
                                 </details>
                                 
-                                <details id="q1-p3-details-${index}" class="incomplete-part"> style="margin-top: 10px;">
+                                <details id="q1-p3-details-${index}" class="incomplete-part" style="margin-top: 10px;">
                                     <summary style="cursor: pointer; font-weight: 600; margin-bottom: 10px;">
                                         Part 3: Model Building (7 marks)
                                         <label style="margin-left: 20px; font-weight: normal;" onclick="event.stopPropagation();">
@@ -1579,7 +1579,7 @@
                                     </div>
                                 </details>
                                 
-                                <details id="q1-p4-details-${index}" class="incomplete-part"> style="margin-top: 10px;">
+                                <details id="q1-p4-details-${index}" class="incomplete-part" style="margin-top: 10px;">
                                     <summary style="cursor: pointer; font-weight: 600; margin-bottom: 10px;">
                                         Part 4: Evaluation (5 marks)
                                         <label style="margin-left: 20px; font-weight: normal;" onclick="event.stopPropagation();">
@@ -1604,7 +1604,7 @@
                                     </div>
                                 </details>
                                 
-                                <details id="q1-bonus-details-${index}" class="incomplete-part"> style="margin-top: 10px;">
+                                <details id="q1-bonus-details-${index}" class="incomplete-part" style="margin-top: 10px;">
                                     <summary style="cursor: pointer; font-weight: 600; margin-bottom: 10px;">
                                         Part 5: Bonus (3 marks)
                                         <label style="margin-left: 20px; font-weight: normal;" onclick="event.stopPropagation();">
@@ -1747,12 +1747,10 @@
                     }
                 });
             } else {
-                // Select the "None" radio button and enable all radios
+                // UNCHECK all radio buttons (reset to nothing selected)
                 const radios = document.querySelectorAll(`input[name="${taskName}-${index}"]`);
                 radios.forEach(radio => {
-                    if (radio.getAttribute('data-marks') === '0') {
-                        radio.checked = true;
-                    }
+                    radio.checked = false;  // Uncheck everything
                     // Enable all visible radios
                     if (radio.style.display !== 'none') {
                         radio.disabled = false;
