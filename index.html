@@ -583,6 +583,9 @@
                     <button class="btn btn-secondary" onclick="resetApp()">
                         🔄 New File
                     </button>
+                    <button class="btn btn-info" onclick="scrollToFirstUngraded()" style="background: #3498db; border-color: #3498db;">
+                        ⬇️ Jump to First Ungraded
+                    </button>
                     <div style="margin-top: 10px; font-size: 0.85rem; color: #666; text-align: right;">
                         💡 Downloaded file includes Zip File URLs for future re-grading
                     </div>
@@ -927,6 +930,40 @@
             }
         }
 
+        function toggleGradingSection(index) {
+            const section = document.getElementById(`grading-section-${index}`);
+            const button = document.getElementById(`toggle-btn-${index}`);
+            
+            if (!section || !button) return; // Safety check
+            
+            if (section.style.display === 'none') {
+                section.style.display = 'block';
+                button.textContent = '▼';
+            } else {
+                section.style.display = 'none';
+                button.textContent = '▶';
+            }
+        }
+
+        function scrollToFirstUngraded() {
+            for (let i = 0; i < studentsData.length; i++) {
+                const badge = document.querySelector(`#card-${i} .grading-status-badge`);
+                if (badge && badge.getAttribute('data-graded') !== 'true') {
+                    const card = document.getElementById(`card-${i}`);
+                    if (card) {
+                        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // Add a highlight effect
+                        card.style.boxShadow = '0 0 20px rgba(255, 152, 0, 0.5)';
+                        setTimeout(() => {
+                            card.style.boxShadow = '';
+                        }, 2000);
+                        return;
+                    }
+                }
+            }
+            alert('🎉 All students are graded!');
+        }
+
         function displayStudents() {
             document.getElementById('uploadSection').style.display = 'none';
             document.getElementById('studentsGrid').style.display = 'block';
@@ -948,7 +985,7 @@
                 
                 return `
                 <div class="student-card" id="card-${index}" style="border-left: 4px solid ${isGraded ? '#4caf50' : '#ff9800'};">
-                    <div class="student-header">
+                    <div class="student-header" style="cursor: pointer;" onclick="toggleGradingSection(${index})">
                         <div class="student-info">
                             <h3>${student.fullName}</h3>
                             <p>ID: ${student.idNumber} | Email: ${student.email}</p>
@@ -959,9 +996,15 @@
                                 <div class="total-grade-label">Total Grade</div>
                                 <div class="total-grade-value" id="total-${index}">${student.totalGrade || '—'}</div>
                             </div>
+                            <button id="toggle-btn-${index}" 
+                                    style="background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 5px; color: #666;"
+                                    onclick="event.stopPropagation(); toggleGradingSection(${index})">
+                                ${isGraded ? '▶' : '▼'}
+                            </button>
                         </div>
                     </div>
 
+                    <div id="grading-section-${index}" style="display: ${isGraded ? 'none' : 'block'};">
                     ${student.zipUrl ? `
                     <div class="zip-section">
                         <div class="zip-header">
@@ -1020,7 +1063,11 @@
                                            min="0"
                                            max="28"
                                            onchange="updateTotal(${index})">
-                                    <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">💡 Only use this if you need to adjust the final grade</div>
+                                    <button onclick="submitManualGrade(${index}, 'q1')" 
+                                            style="margin-top: 10px; padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; width: 100%;">
+                                        ✓ Submit Manual Grade
+                                    </button>
+                                    <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">💡 Enter grade to mark complete, or leave empty to clear all Q1 grades</div>
                                 </div>
                                 
                                 <details id="q1-p1-details-${index}" class="incomplete-part">
@@ -1267,7 +1314,11 @@
                                            min="0"
                                            max="19"
                                            onchange="updateTotal(${index})">
-                                    <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">💡 Only use this if you need to adjust the final grade</div>
+                                    <button onclick="submitManualGrade(${index}, 'q2')" 
+                                            style="margin-top: 10px; padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; width: 100%;">
+                                        ✓ Submit Manual Grade
+                                    </button>
+                                    <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">💡 Enter grade to mark complete, or leave empty to clear all Q2 grades</div>
                                 </div>
                                 
                                 <details id="q2-p1-details-${index}" class="incomplete-part">
@@ -1434,7 +1485,11 @@
                                            min="0"
                                            max="22"
                                            onchange="updateTotal(${index})">
-                                    <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">💡 Only use this if you need to adjust the final grade</div>
+                                    <button onclick="submitManualGrade(${index}, 'q3')" 
+                                            style="margin-top: 10px; padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; width: 100%;">
+                                        ✓ Submit Manual Grade
+                                    </button>
+                                    <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">💡 Enter grade to mark complete, or leave empty to clear all Q3 grades</div>
                                 </div>
                                 
                                 <details id="q3-p1-details-${index}" class="incomplete-part">
@@ -1637,6 +1692,7 @@
                             </div>
                         </div>
                     </div>
+                    </div>
 
                     <div class="student-actions">
                         <button class="btn btn-small" onclick="downloadStudentSheet(${index})">
@@ -1830,6 +1886,114 @@
                     detailsElement.classList.add('incomplete-part');
                 }
             });
+        }
+
+        function submitManualGrade(index, question) {
+            // Get the manual grade input
+            const manualInput = document.getElementById(`${question}-manual-${index}`);
+            const manualGrade = parseFloat(manualInput.value);
+            
+            // If empty, clear the question's grades
+            if (!manualInput.value || manualInput.value.trim() === '') {
+                clearQuestionGrades(index, question);
+                return;
+            }
+            
+            // Validate
+            if (isNaN(manualGrade)) {
+                alert('⚠️ Please enter a valid number!');
+                return;
+            }
+            
+            // Set the grade
+            if (question === 'q1') {
+                studentsData[index].q1Grade = manualGrade;
+                document.getElementById(`q1-total-${index}`).textContent = manualGrade.toFixed(1);
+            } else if (question === 'q2') {
+                studentsData[index].q2Grade = manualGrade;
+                document.getElementById(`q2-total-${index}`).textContent = manualGrade.toFixed(1);
+            } else if (question === 'q3') {
+                studentsData[index].q3Grade = manualGrade;
+                document.getElementById(`q3-total-${index}`).textContent = manualGrade.toFixed(1);
+            }
+            
+            // Check ALL "✓ Full Part" checkboxes for this question
+            const partsList = {
+                'q1': ['p1', 'p2', 'p3', 'p4', 'bonus'],
+                'q2': ['p1', 'p2', 'p3'],
+                'q3': ['p1', 'p2', 'p3', 'p4', 'bonus']
+            };
+            
+            partsList[question].forEach(partId => {
+                // Check the "✓ Full Part" checkbox
+                const partCheckbox = document.querySelector(`.${question}-part-quick-${index}[data-part="${partId}"]`);
+                if (partCheckbox) {
+                    partCheckbox.checked = true;
+                }
+                
+                // Mark the part as complete (green)
+                const detailsElement = document.getElementById(`${question}-${partId}-details-${index}`);
+                if (detailsElement) {
+                    detailsElement.classList.remove('incomplete-part');
+                    detailsElement.classList.add('complete-part');
+                }
+            });
+            
+            // Update total and check if all questions complete
+            updateTotal(index);
+            
+            // Show confirmation
+            alert(`✅ Manual grade submitted! All parts for ${question.toUpperCase()} marked as complete.`);
+        }
+
+        function clearQuestionGrades(index, question) {
+            // Expand grading section if collapsed
+            const section = document.getElementById(`grading-section-${index}`);
+            const button = document.getElementById(`toggle-btn-${index}`);
+            if (section && button && section.style.display === 'none') {
+                section.style.display = 'block';
+                button.textContent = '▼';
+            }
+
+            // Clear all checkboxes for this question
+            document.querySelectorAll(`.${question}-check-${index}`).forEach(cb => {
+                cb.checked = false;
+                cb.disabled = false;
+            });
+
+            // Clear all quick checkboxes for this question
+            document.querySelectorAll(`.${question}-quick-${index}`).forEach(cb => {
+                cb.checked = false;
+            });
+
+            // Clear all part quick checkboxes for this question
+            document.querySelectorAll(`.${question}-part-quick-${index}`).forEach(cb => {
+                cb.checked = false;
+            });
+
+            // Clear the manual override input
+            const manualInput = document.getElementById(`${question}-manual-${index}`);
+            if (manualInput) manualInput.value = '';
+
+            // Reset grade in data
+            if (question === 'q1') {
+                studentsData[index].q1Grade = 0;
+                document.getElementById(`q1-total-${index}`).textContent = '0';
+            } else if (question === 'q2') {
+                studentsData[index].q2Grade = 0;
+                document.getElementById(`q2-total-${index}`).textContent = '0';
+            } else if (question === 'q3') {
+                studentsData[index].q3Grade = 0;
+                document.getElementById(`q3-total-${index}`).textContent = '0';
+            }
+
+            // Run calculation to update part colors (make them yellow)
+            if (question === 'q1') calculateQ1(index);
+            else if (question === 'q2') calculateQ2(index);
+            else if (question === 'q3') calculateQ3(index);
+
+            // Show confirmation
+            alert(`✅ All grades for ${question.toUpperCase()} cleared! Parts are now yellow and ready for re-grading.`);
         }
 
         function calculateQ1(index) {
