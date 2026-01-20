@@ -937,11 +937,11 @@
             cardsContainer.innerHTML = studentsData.map((student, index) => {
                 const isGraded = student.totalGrade && student.totalGrade > 0;
                 const gradingStatusBadge = !isGraded ? `
-                    <div style="background: #ff9800; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 600;">
+                    <div class="grading-status-badge" data-graded="false" style="background: #ff9800; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 600;">
                         ⚠️ Not Graded
                     </div>
                 ` : `
-                    <div style="background: #4caf50; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 600;">
+                    <div class="grading-status-badge" data-graded="true" style="background: #4caf50; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 600;">
                         ✓ Graded
                     </div>
                 `;
@@ -1377,20 +1377,9 @@
                                             <label style="margin-left: 10px;"><input type="radio" name="q2-p3t1-${index}" class="q2-check-${index}" data-marks="0.5" onchange="calculateQ2(${index})"> Half (0.5)</label>
                                             <label style="margin-left: 10px;"><input type="radio" name="q2-p3t1-${index}" class="q2-check-${index}" data-marks="0" onchange="calculateQ2(${index})"> None (0)</label>
                                         </div>
-                                    </div>
-                                </details>
-                                
-                                <details id="q2-bonus-details-${index}" class="incomplete-part" style="margin-top: 10px;">
-                                    <summary style="cursor: pointer; font-weight: 600; margin-bottom: 10px;">
-                                        Bonus (3 marks)
-                                        <label style="margin-left: 20px; font-weight: normal;" onclick="event.stopPropagation();">
-                                            <input type="checkbox" class="q2-part-quick-${index}" data-part="bonus" data-max="3" onchange="quickCheckPart(this, ${index}, 'q2', 'bonus')"> ✓ Full Part
-                                        </label>
-                                    </summary>
-                                    <div style="padding-left: 15px; line-height: 2;">
-                                        <div style="margin-bottom: 5px;">
-                                            <strong>Task 2 Bonus (3):</strong>
-                                            <label style="margin-left: 10px;"><input type="checkbox" class="q2-quick-${index} q2-bonus-task-${index}" data-task="q2-bonus" data-marks="3" onchange="quickCheck(this, ${index}, 'q2')"> ✓ Full</label>
+                                        <div style="margin-bottom: 5px; margin-top: 15px; padding-top: 15px; border-top: 2px dashed #ddd;">
+                                            <strong style="color: #0066cc;">Task 2 Bonus (3):</strong>
+                                            <label style="margin-left: 10px;"><input type="checkbox" class="q2-quick-${index} q2-p3-task-${index}" data-task="q2-bonus" data-marks="3" onchange="quickCheck(this, ${index}, 'q2')"> ✓ Full</label>
                                             <input type="radio" name="q2-bonus-${index}" class="q2-check-${index}" data-marks="3" onchange="calculateQ2(${index})" style="display:none;">
                                             <label style="margin-left: 10px;"><input type="radio" name="q2-bonus-${index}" class="q2-check-${index}" data-marks="1.5" onchange="calculateQ2(${index})"> Half (1.5)</label>
                                             <label style="margin-left: 10px;"><input type="radio" name="q2-bonus-${index}" class="q2-check-${index}" data-marks="0" onchange="calculateQ2(${index})"> None (0)</label>
@@ -1805,7 +1794,7 @@
             // Define parts for each question
             const parts = {
                 'q1': ['p1', 'p2', 'p3', 'p4', 'bonus'],
-                'q2': ['p1', 'p2', 'p3', 'bonus'],
+                'q2': ['p1', 'p2', 'p3'],  // Bonus is now inside Part 3
                 'q3': ['p1', 'p2', 'p3', 'p4', 'bonus']
             };
             
@@ -1955,15 +1944,16 @@
                 card.style.borderLeft = `4px solid ${isFullyGraded ? '#4caf50' : '#ff9800'}`;
                 
                 // Find and update the status badge
-                const badges = card.querySelectorAll('[style*="background: #ff9800"], [style*="background: #4caf50"]');
-                if (badges.length > 0) {
-                    const badge = badges[0];
+                const badge = card.querySelector('.grading-status-badge');
+                if (badge) {
                     if (isFullyGraded) {
                         badge.style.background = '#4caf50';
                         badge.innerHTML = '✓ Graded';
+                        badge.setAttribute('data-graded', 'true');
                     } else {
                         badge.style.background = '#ff9800';
                         badge.innerHTML = '⚠️ Not Graded';
+                        badge.setAttribute('data-graded', 'false');
                     }
                 }
             }
@@ -1980,8 +1970,8 @@
             const allParts = [
                 // Q1 parts
                 'q1-p1', 'q1-p2', 'q1-p3', 'q1-p4', 'q1-bonus',
-                // Q2 parts
-                'q2-p1', 'q2-p2', 'q2-p3', 'q2-bonus',
+                // Q2 parts (bonus is now inside Part 3)
+                'q2-p1', 'q2-p2', 'q2-p3',
                 // Q3 parts
                 'q3-p1', 'q3-p2', 'q3-p3', 'q3-p4', 'q3-bonus'
             ];
@@ -2011,9 +2001,9 @@
                 const card = document.getElementById(`card-${i}`);
                 
                 if (card) {
-                    // Card exists - check badge (for real-time updates)
-                    const badge = card.querySelector('[style*="background: #4caf50"]');
-                    if (badge && badge.innerHTML === '✓ Graded') {
+                    // Card exists - check badge data attribute (for real-time updates)
+                    const badge = card.querySelector('.grading-status-badge');
+                    if (badge && badge.getAttribute('data-graded') === 'true') {
                         graded++;
                     }
                 } else {
